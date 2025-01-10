@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procedimiento de Entrada</title>
+    <style>
+        /* Reset básico */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #d32f2f;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .stage {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .stage.active {
+            display: block;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #d32f2f;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus, textarea:focus, select:focus {
+            border-color: #d32f2f;
+            outline: none;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .radio-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .radio-group input {
+            margin-right: 5px;
+        }
+
+        .button {
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 100%;
+        }
+
+        .button:hover {
+            background-color: #b71c1c;
+            transform: translateY(-2px);
+        }
+
+        a {
+            color: #d32f2f;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #a52727;
+            text-decoration: underline;
+        }
+
+        .dynamic-text {
+            font-weight: bold;
+            color: #d32f2f;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Barra de progreso */
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            counter-reset: step;
+        }
+
+        .progress-step {
+            width: 100%;
+            position: relative;
+            text-align: center;
+        }
+
+        .progress-step::before {
+            content: counter(step);
+            counter-increment: step;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            border: 2px solid #d32f2f;
+            display: block;
+            text-align: center;
+            margin: 0 auto 10px auto;
+            border-radius: 50%;
+            background-color: #fff;
+            color: #d32f2f;
+            font-weight: bold;
+        }
+
+        .progress-step::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 4px;
+            background-color: #ccc;
+            top: 15px;
+            left: -50%;
+            z-index: -1;
+        }
+
+        .progress-step:first-child::after {
+            content: none;
+        }
+
+        .progress-step.active::before {
+            background-color: #d32f2f;
+            color: #fff;
+            border-color: #d32f2f;
+        }
+
+        .progress-step.active + .progress-step::after {
+            background-color: #d32f2f;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Estilos finales */
+        .final-message {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .final-message h2 {
+            color: #d32f2f;
+            margin-bottom: 10px;
+        }
+
+        .final-message p {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .restart-button {
+            background-color: #4caf50;
+        }
+
+        .restart-button:hover {
+            background-color: #45a049;
+        }
+
+        /* Responsividad */
+        @media (max-width: 600px) {
+            .progress-bar {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .progress-step::after {
+                width: 4px;
+                height: 50%;
+                left: 50%;
+                top: 30px;
+                transform: translateX(-50%);
+            }
+
+            .progress-step:last-child::after {
+                display: none;
+            }
+        }
+
+        /* Tabla de resumen */
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .summary-table th, .summary-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        .summary-table th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Procedimiento de Atención al Cliente</h1>
+
+        <!-- Barra de Progreso -->
+        <div class="progress-bar">
+            <div class="progress-step active">Etapa 1</div>
+            <div class="progress-step">Etapa 2</div>
+            <div class="progress-step">Etapa 3</div>
+            <div class="progress-step">Final</div>
+        </div>
+
+        <!-- Etapa 1: Nombre del Cliente -->
+        <div class="stage active" id="stage1">
+            <div class="section">
+                <label for="asesorNombre">Nombre del Asesor:</label>
+                <input type="text" id="asesorNombre" placeholder="Ingrese su nombre">
+            </div>
+
+            <div class="section">
+                <label for="clienteNombre">Nombre del Cliente:</label>
+                <input type="text" id="clienteNombre" placeholder="Ingrese el nombre del cliente">
+            </div>
+            
+            <div class="section">
+                <p id="saludo">Buenos días, le saluda <span class="dynamic-text" id="saludoAsesor">[NOMBRE ASESOR]</span>, hoy seré el encargado de su atención. ¿Con quién tengo el gusto?</p>
+            </div>
+
+            <button class="button" onclick="nextStage(1)">Continuar</button>
+        </div>
+
+        <!-- Etapa 2: Información del Cliente -->
+        <div class="stage" id="stage2">
+            <div class="section">
+                <label>¿En qué lo puedo ayudar el día de hoy, Sr/Sra <span class="dynamic-text" id="saludoCliente">[NOMBRE CLIENTE]</span>?</label>
+                <textarea id="problemaCliente" placeholder="Describa brevemente el problema"></textarea>
+            </div>
+            
+            <div class="section">
+                <label for="documentoCliente">Documento de Identidad del Cliente:</label>
+                <input type="text" id="documentoCliente" placeholder="Número de documento">
+            </div>
+
+            <div class="section">
+                <label for="snCliente">SN (Número de Serie):</label>
+                <input type="text" id="snCliente" placeholder="Ingrese el SN del producto">
+            </div>
+
+            <div class="section">
+                <label for="contactoCliente">Número de Contacto:</label>
+                <input type="text" id="contactoCliente" placeholder="Ingrese el número de contacto">
+            </div>
+            
+            <div class="section">
+                <label>¿Es el titular del servicio?</label>
+                <div class="radio-group">
+                    <div>
+                        <input type="radio" name="titular" value="Sí" id="titularSi">
+                        <label for="titularSi">Sí</label>
+                    </div>
+                    <div>
+                        <input type="radio" name="titular" value="No" id="titularNo">
+                        <label for="titularNo">No</label>
+                    </div>
+                </div>
+            </div>
+
+            <button class="button" onclick="nextStage(2)">Continuar</button>
+        </div>
+
+        <!-- Etapa 3: Frase de Empatía y Enlaces -->
+        <div class="stage" id="stage3">
+            <div class="section">
+                <label>Frases de empatía:</label>
+                <a href="https://frankpy18.github.io/frasesdeempatia/" target="_blank">Acceder a frases de empatía</a>
+            </div>
+            
+            <div class="section">
+                <label>Procedimiento estándar:</label>
+                <a href="https://frankpy18.github.io/plantillagenerica/" target="_blank">Utilizar plantilla</a>
+            </div>
+
+            <div class="section">
+                <label>Promociones disponibles:</label>
+                <a href="http://intranetsiacunico/Links/Redirect/BritgeRedirect?secuencia=DA11B9B579CA5FE3697236ADB4AD191C" target="_blank">Buscar promociones</a>
+            </div>
+
+            <div class="section">
+                <label>Pregunta de claridad final:</label>
+                <p>¿La información que le brindé fue clara?</p>
+            </div>
+
+            <div class="section">
+                <label>Despedida vinculada:</label>
+                <a href="https://frankpy18.github.io/frasesdeempatia/" target="_blank">Frases de despedida empática</a>
+            </div>
+
+            <button class="button" onclick="nextStage(3)">Continuar</button>
+        </div>
+
+        <!-- Etapa Final: Confirmación -->
+        <div class="stage" id="stage4">
+            <div class="final-message">
+                <h2>Procedimiento Completo</h2>
+                <p>Gracias por completar el procedimiento de atención al cliente.</p>
+                
+                <!-- Resumen de Datos -->
+                <table class="summary-table" id="resumenDatos">
+                    <tr>
+                        <th>Nombre del Asesor</th>
+                        <td id="resumenAsesor">[NOMBRE ASESOR]</td>
+                    </tr>
+                    <tr>
+                        <th>Nombre del Cliente</th>
+                        <td id="resumenCliente">[NOMBRE CLIENTE]</td>
+                    </tr>
+                    <tr>
+                        <th>Problema Descrito</th>
+                        <td id="resumenProblema">[PROBLEMA]</td>
+                    </tr>
+                    <tr>
+                        <th>Documento de Identidad</th>
+                        <td id="resumenDocumento">[DOCUMENTO]</td>
+                    </tr>
+                    <tr>
+                        <th>SN (Número de Serie)</th>
+                        <td id="resumenSN">[SN]</td>
+                    </tr>
+                    <tr>
+                        <th>Número de Contacto</th>
+                        <td id="resumenContacto">[CONTACTO]</td>
+                    </tr>
+                    <tr>
+                        <th>Titular del Servicio</th>
+                        <td id="resumenTitular">[TITULAR]</td>
+                    </tr>
+                </table>
+
+                <button class="button restart-button" onclick="restartProcedure()">Reiniciar Procedimiento</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para obtener el saludo adecuado basado en la hora
+        function obtenerSaludo() {
+            const horaActual = new Date().getHours();
+            let saludo = "Buenos días";
+
+            if (horaActual >= 12 && horaActual < 19) {
+                saludo = "Buenas tardes";
+            } else if (horaActual >= 19 || horaActual < 6) { // Considerar noche hasta las 6 AM
+                saludo = "Buenas noches";
+            }
+
+            // Obtener el nombre del asesor desde localStorage si está guardado
+            const asesorNombre = localStorage.getItem('asesorNombre') || "[NOMBRE ASESOR]";
+            document.getElementById('saludo').innerHTML = `${saludo}, le saluda <span class="dynamic-text" id="saludoAsesor">${asesorNombre}</span>, hoy seré el encargado de su atención. ¿Con quién tengo el gusto?`;
+        }
+
+        // Función para mostrar la siguiente etapa
+        function nextStage(currentStage) {
+            // Validaciones por etapa
+            if (currentStage === 1) {
+                const asesorNombre = document.getElementById('asesorNombre').value.trim();
+                const clienteNombre = document.getElementById('clienteNombre').value.trim();
+
+                if (asesorNombre === "" || clienteNombre === "") {
+                    alert("Por favor, ingrese tanto el nombre del asesor como el del cliente.");
+                    return;
+                }
+
+                // Almacena los nombres en localStorage
+                localStorage.setItem('asesorNombre', asesorNombre);
+                localStorage.setItem('clienteNombre', clienteNombre);
+
+                // Actualiza los textos dinámicos
+                document.getElementById('saludoAsesor').innerText = asesorNombre;
+                document.getElementById('saludoCliente').innerText = clienteNombre;
+            }
+
+            if (currentStage === 2) {
+                const problema = document.getElementById('problemaCliente').value.trim();
+                const documento = document.getElementById('documentoCliente').value.trim();
+                const sn = document.getElementById('snCliente').value.trim();
+                const contacto = document.getElementById('contactoCliente').value.trim();
+                const titularSi = document.getElementById('titularSi').checked;
+                const titularNo = document.getElementById('titularNo').checked;
+
+                if (problema === "" || documento === "" || sn === "" || contacto === "" || (!titularSi && !titularNo)) {
+                    alert("Por favor, complete todos los campos de esta etapa.");
+                    return;
+                }
+
+                // Validaciones adicionales
+                if (!/^\d+$/.test(documento)) {
+                    alert("El documento de identidad debe contener solo números.");
+                    return;
+                }
+
+                if (!/^\d+$/.test(contacto)) {
+                    alert("El número de contacto debe contener solo números.");
+                    return;
+                }
+
+                // Almacenar los datos en localStorage
+                localStorage.setItem('problemaCliente', problema);
+                localStorage.setItem('documentoCliente', documento);
+                localStorage.setItem('snCliente', sn);
+                localStorage.setItem('contactoCliente', contacto);
+                localStorage.setItem('titularServicio', titularSi ? 'Sí' : 'No');
+            }
+
+            // Actualizar barra de progreso
+            updateProgress(currentStage + 1);
+
+            // Ocultar la etapa actual
+            document.getElementById(`stage${currentStage}`).classList.remove('active');
+
+            // Mostrar la siguiente etapa
+            document.getElementById(`stage${currentStage + 1}`).classList.add('active');
+
+            // Si es la etapa final, mostrar el resumen
+            if (currentStage + 1 === 4) {
+                mostrarResumen();
+            }
+        }
+
+        // Función para actualizar la barra de progreso
+        function updateProgress(stage) {
+            const steps = document.querySelectorAll('.progress-step');
+            steps.forEach((step, index) => {
+                if (index < stage) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+        }
+
+        // Función para reiniciar el procedimiento
+        function restartProcedure() {
+            // Limpiar localStorage
+            localStorage.clear();
+
+            // Limpiar campos
+            document.getElementById('asesorNombre').value = '';
+            document.getElementById('clienteNombre').value = '';
+            document.getElementById('saludo').innerHTML = 'Buenos días, le saluda <span class="dynamic-text" id="saludoAsesor">[NOMBRE ASESOR]</span>, hoy seré el encargado de su atención. ¿Con quién tengo el gusto?';
+            document.getElementById('problemaCliente').value = '';
+            document.getElementById('documentoCliente').value = '';
+            document.getElementById('snCliente').value = '';
+            document.getElementById('contactoCliente').value = '';
+            document.getElementById('titularSi').checked = false;
+            document.getElementById('titularNo').checked = false;
+
+            // Resetear barra de progreso
+            updateProgress(1);
+
+            // Ocultar todas las etapas y mostrar la primera
+            const stages = document.querySelectorAll('.stage');
+            stages.forEach(stage => stage.classList.remove('active'));
+            document.getElementById('stage1').classList.add('active');
+        }
+
+        // Función para actualizar el saludo en tiempo real
+        function actualizarSaludoEnTiempoReal() {
+            const asesorInput = document.getElementById('asesorNombre');
+            asesorInput.addEventListener('input', function() {
+                const asesorNombre = asesorInput.value.trim() || "[NOMBRE ASESOR]";
+                document.getElementById('saludoAsesor').innerText = asesorNombre;
+            });
+        }
+
+        // Función para mostrar el resumen de datos
+        function mostrarResumen() {
+            const asesorNombre = localStorage.getItem('asesorNombre') || "[NOMBRE ASESOR]";
+            const clienteNombre = localStorage.getItem('clienteNombre') || "[NOMBRE CLIENTE]";
+            const problema = localStorage.getItem('problemaCliente') || "[PROBLEMA]";
+            const documento = localStorage.getItem('documentoCliente') || "[DOCUMENTO]";
+            const sn = localStorage.getItem('snCliente') || "[SN]";
+            const contacto = localStorage.getItem('contactoCliente') || "[CONTACTO]";
+            const titular = localStorage.getItem('titularServicio') || "[TITULAR]";
+
+            document.getElementById('resumenAsesor').innerText = asesorNombre;
+            document.getElementById('resumenCliente').innerText = clienteNombre;
+            document.getElementById('resumenProblema').innerText = problema;
+            document.getElementById('resumenDocumento').innerText = documento;
+            document.getElementById('resumenSN').innerText = sn;
+            document.getElementById('resumenContacto').innerText = contacto;
+            document.getElementById('resumenTitular').innerText = titular;
+        }
+
+        // Cargar el nombre del asesor y cliente desde localStorage al cargar la página
+        window.onload = function() {
+            obtenerSaludo();  // Llama a la función para obtener el saludo basado en la hora
+            
+            const asesorNombreGuardado = localStorage.getItem('asesorNombre');
+            const clienteNombreGuardado = localStorage.getItem('clienteNombre');
+
+            if (asesorNombreGuardado && clienteNombreGuardado) {
+                document.getElementById('asesorNombre').value = asesorNombreGuardado;
+                document.getElementById('clienteNombre').value = clienteNombreGuardado;
+                document.getElementById('saludoAsesor').innerText = asesorNombreGuardado;
+                document.getElementById('saludoCliente').innerText = clienteNombreGuardado;
+                // Opcional: Avanzar a la etapa 2 automáticamente si ya se han ingresado los datos
+                // updateProgress(2);
+                // document.getElementById('stage1').classList.remove('active');
+                // document.getElementById('stage2').classList.add('active');
+            }
+
+            // Inicializar la actualización en tiempo real del saludo
+            actualizarSaludoEnTiempoReal();
+        };
+    </script>
+</body>
+</html>
